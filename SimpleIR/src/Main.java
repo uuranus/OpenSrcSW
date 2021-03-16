@@ -17,6 +17,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.snu.ids.kkma.index.Keyword;
+import org.snu.ids.kkma.index.KeywordExtractor;
+import org.snu.ids.kkma.index.KeywordList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -53,16 +56,27 @@ public class Main {
 					}
 					Document docu=Jsoup.parse(html);
 					
-					
+					//title 가져오기
 					String tle=docu.select("title").text();
-					System.out.println(tle);
 					
 					
+					//body text 가져오기
 					String text="";
 					Elements elements=docu.select("p");
 					for(Element el : elements) {
 						text+=el.text()+"\n";
 					}
+					
+					//형태소 분석기
+					KeywordExtractor ke=new KeywordExtractor();
+					KeywordList kl=ke.extractKeyword(text, true);
+					
+					text="";
+					for(int j=0;j<kl.size();j++) {
+						Keyword kwrd=kl.get(j);
+						text+=kwrd.getString()+":"+kwrd.getCnt()+"#";
+					}
+					
 					
 
 					//code element
