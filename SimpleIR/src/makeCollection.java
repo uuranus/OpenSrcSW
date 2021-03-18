@@ -1,9 +1,8 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,16 +16,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.snu.ids.kkma.index.Keyword;
-import org.snu.ids.kkma.index.KeywordExtractor;
-import org.snu.ids.kkma.index.KeywordList;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-public class Main {
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+public class makeCollection {
+	public void makeCollectionxml(String directory) {
 		try {
 			
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -40,7 +32,7 @@ public class Main {
 			doc.appendChild(docs);
 			
 			//파일 읽어오기
-			String path="src/data/";
+			String path="src/data";
 			File dir=new File(path);
 			File files[]=dir.listFiles();
 			
@@ -66,18 +58,6 @@ public class Main {
 					for(Element el : elements) {
 						text+=el.text()+"\n";
 					}
-					
-					//형태소 분석기
-					KeywordExtractor ke=new KeywordExtractor();
-					KeywordList kl=ke.extractKeyword(text, true);
-					
-					text="";
-					for(int j=0;j<kl.size();j++) {
-						Keyword kwrd=kl.get(j);
-						text+=kwrd.getString()+":"+kwrd.getCnt()+"#";
-					}
-					
-					
 
 					//code element
 					org.w3c.dom.Element code=doc.createElement("doc");
@@ -108,7 +88,7 @@ public class Main {
 			transformer.setOutputProperty(OutputKeys.INDENT,"yes");
 
 			DOMSource source=new DOMSource(doc);
-			StreamResult result=new StreamResult(new FileOutputStream(new File("src/Collection.xml")));
+			StreamResult result=new StreamResult(new FileOutputStream(new File(directory+"/Collection.xml")));
 
 			transformer.transform(source,result);
 
@@ -116,8 +96,5 @@ public class Main {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
-
 }
