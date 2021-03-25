@@ -44,7 +44,7 @@ public class makeCollection {
 			        String line="";
 			        String html="";
 					while((line=br.readLine())!=null) {
-						html+=line+"\n";
+						html+=line;
 					}
 					Document docu=Jsoup.parse(html);
 					
@@ -56,7 +56,7 @@ public class makeCollection {
 					String text="";
 					Elements elements=docu.select("p");
 					for(Element el : elements) {
-						text+=el.text()+"\n";
+						text+=el.text();
 					}
 
 					//code element

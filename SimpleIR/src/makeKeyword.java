@@ -52,7 +52,12 @@ public class makeKeyword {
 					text="";
 					for(int j=0;j<kl.size();j++) {
 						Keyword kwrd=kl.get(j);
-						text+=kwrd.getString()+":"+kwrd.getCnt()+"#";
+						if(j==kl.size()-1) {
+							text+=kwrd.getString()+":"+kwrd.getCnt();
+						}
+						else {
+							text+=kwrd.getString()+":"+kwrd.getCnt()+"#";
+						}
 					}
 					
 					//body text °ª º¯°æ
