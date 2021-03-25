@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class indexer {
-	public void makeXmltoPost(String index) throws IOException, ClassNotFoundException {
+	public void makePost(String index) throws IOException, ClassNotFoundException {
 		//index.post는 정보검색 시 특정 단어가 어느 파링레 나왔는지를 알려주는 역파일(inverted file)
 		
 		try { //DocFactory에 대한 try catch 문

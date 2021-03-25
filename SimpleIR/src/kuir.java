@@ -22,7 +22,7 @@ public class kuir {
 			else if(args[0].equals("-i")) {
 				String index=args[1];
 				indexer mp=new indexer();
-				mp.makeXmltoPost(index);
+				mp.makePost(index);
 			}
 		}
 		
