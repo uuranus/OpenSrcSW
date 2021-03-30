@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,7 +28,7 @@ public class indexer {
 			
 			ObjectOutputStream objectoutputstream=new ObjectOutputStream(fileoutputstream);
 			
-			HashMap<String, String> hashmap=new HashMap<String,String>();
+			HashMap<String, ArrayList> hashmap=new HashMap<String,ArrayList>();
 			
 			//index.xml에서 읽어온 바디 부분들을 형식에 맞게 hashmap에 추가 
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -43,21 +44,24 @@ public class indexer {
 				Node docchild=doclist.item(i);
 				String[] text=docchild.getChildNodes().item(3).getTextContent().split("#");
 				Element edocchild=(Element)docchild;
-				String id=edocchild.getAttribute("id");
+				Float id=Float.parseFloat(edocchild.getAttribute("id"));
 		
 				for(int j=0;j<text.length;j++) {
 					String[] temp=text[j].split(":");
 					String key=temp[0];
-					String frequency=id+" "+temp[1]+"#";
+					Float frequency=Float.parseFloat(temp[1]);
 					
-					//String value=Integer.toString(i)+" "+getWeight(temp[1],i,bodylist.getLength());
 					if(hashmap.containsKey(key)) { //이미 있다면 전 body에서 추가된 것 value값만 추가하자
-						String newfre=hashmap.get(key); //key값의 value 가져오기
-						newfre+=frequency;
-						hashmap.put(key, newfre);
+						ArrayList altemp=hashmap.get(key); //key값의 value 가져오기 문서 아이디 값, 빈도수 2개씩 저장
+						altemp.add(id);
+						altemp.add(frequency);
+						hashmap.put(key, altemp);
 					}
 					else {
-						hashmap.put(key, frequency);
+						ArrayList<Float> al=new ArrayList<Float>();
+						al.add(id);
+						al.add(frequency);
+						hashmap.put(key, al);
 					}
 					//weight계산시 총 문서 출현 빈도를 알아야 하기 때문에 일단은 각 문서의 빈도수만 저장
 				}
@@ -67,20 +71,14 @@ public class indexer {
 			Iterator<String> iter=hashmap.keySet().iterator();
 			while(iter.hasNext()) {
 				String key=iter.next();
-				String value=(String)hashmap.get(key);
+				ArrayList<Float> values=(ArrayList)hashmap.get(key);
 				
-				String temp[]=value.split("#");
-				String[] newvalue=new String[5]; //null값으로 초기화
-				int df=temp.length; //문서 출현 횟수 
-				for(int i=0;i<df;i++) {
-					String[] temp2=temp[i].split(" ");
-					int temp0=Integer.parseInt(temp2[0]);
-					newvalue[temp0]=getWeight(temp2[1],df,N);
+				int df=values.size()/2; //문서 출현 횟수 아이디,빈도수 2개씩 저장했으므로 나누기 2
+				for(int i=1;i<values.size();i+=2) { //2개씩 저장했으니까 빈도수 2칸 차이로 저장되어있음
+					float tf=values.get(i);
+					values.set(i,getWeight(tf,df,N)); //빈도수 -> 가중치로 변경해서 저장
 				}
 				
-
-				String strnewvalue=makeNewvalueStr(newvalue);
-				hashmap.put(key,strnewvalue);
 			}
 		
 			objectoutputstream.writeObject(hashmap);
@@ -102,10 +100,10 @@ public class indexer {
 			
 			while(it.hasNext()) {
 				String key=it.next();
-				String value=(String)hashmap2.get(key);
-				System.out.println(key+"="+value);
+				ArrayList<Float> values=(ArrayList)hashmap2.get(key);
+				System.out.println(key+"="+values);
 			}
-
+			
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -113,30 +111,11 @@ public class indexer {
 		
 	}
 	
-	private String getWeight(String tf,int df,int N) {
+	private float getWeight(float tf,int df,int N) {
 		//tf 는 해당 문서에서 등장 횟수 df는 몇개의 문서에서 등장하는지 N은 총 문서의 개수
-		int itf=Integer.parseInt(tf);
-		double weight=itf*Math.log10((double)N/df);
-		return Double.toString(weight);
+		float weight=Math.round(tf*Math.log((double)N/df)*100);
+		weight=weight/100;
+		return weight;
 	}
-	
-	private String makeNewvalueStr(String[] newvalue) {
-		String strnewvalue="";
-		for(int i=0;i<5;i++) {
-			
-			String temp2="";
-			if(newvalue[i]==null)
-				temp2="0.00";
-			else
-				temp2=newvalue[i];
-				
-			if(i==4) 
-				strnewvalue+=Integer.toString(i)+" "+ temp2;
-			else
-				strnewvalue+=Integer.toString(i)+" "+ temp2+" ";
-	
-		}
 
-		return strnewvalue;
-	}
 }
