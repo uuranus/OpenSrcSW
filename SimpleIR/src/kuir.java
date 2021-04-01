@@ -1,4 +1,7 @@
+
 import java.io.IOException;
+import java.util.Scanner;
+
 
 public class kuir {
 
@@ -23,7 +26,17 @@ public class kuir {
 				String index=args[1];
 				indexer mp=new indexer();
 				mp.makePost(index);
+				Scanner scan=new Scanner(System.in);
+				System.out.println("query를 입력하세요");
+				String query=scan.nextLine();
+				mp.getQeury(query);
 			}
+			else if(args[0].equals("-s")) {
+				String post=args[1];
+				searcher sc=new searcher();
+				sc.
+			}
+
 		}
 		
 	}
