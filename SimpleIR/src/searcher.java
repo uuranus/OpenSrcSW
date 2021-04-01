@@ -29,17 +29,9 @@ public class searcher {
 			
 			Object object= objectinputstream.readObject();
 			objectinputstream.close();
-			
-			System.out.println("읽어올 객체의 type="+object.getClass());
-			
+
 			HashMap hashmap=(HashMap)object;
 			Iterator<String> it=hashmap.keySet().iterator();
-			
-			while(it.hasNext()) {
-				String key=it.next();
-				ArrayList<Float> values=(ArrayList)hashmap.get(key);
-				System.out.println(key+"="+values);
-			}
 			
 			KeywordExtractor ke=new KeywordExtractor();
 			KeywordList kl=ke.extractKeyword(query, true);
