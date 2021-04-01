@@ -34,7 +34,8 @@ public class kuir {
 			else if(args[0].equals("-s")) {
 				String post=args[1];
 				searcher sc=new searcher();
-				sc.
+				sc.getSim(post,args[3]);
+				//args 0 은 -s 1은 index.post 경로 2는 -q 3은 쿼리 문장
 			}
 
 		}
