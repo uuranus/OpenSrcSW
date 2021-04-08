@@ -12,12 +12,17 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.snu.ids.kkma.index.Keyword;
+import org.snu.ids.kkma.index.KeywordExtractor;
+import org.snu.ids.kkma.index.KeywordList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class indexer {
+	HashMap<String, ArrayList> hashmap=new HashMap<String,ArrayList>();
+	int N;
 	public void makePost(String index) throws IOException, ClassNotFoundException {
 		//index.post는 정보검색 시 특정 단어가 어느 파링레 나왔는지를 알려주는 역파일(inverted file)
 		
@@ -28,7 +33,7 @@ public class indexer {
 			
 			ObjectOutputStream objectoutputstream=new ObjectOutputStream(fileoutputstream);
 			
-			HashMap<String, ArrayList> hashmap=new HashMap<String,ArrayList>();
+			
 			
 			//index.xml에서 읽어온 바디 부분들을 형식에 맞게 hashmap에 추가 
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -39,7 +44,7 @@ public class indexer {
 			Document doc=docBuilder.parse(file);
 			
 			NodeList doclist=doc.getElementsByTagName("doc");
-			int N=doclist.getLength();//총 문서 수는 나중에 weight계산시 계속 필요하니까 전역변수 선언
+			N=doclist.getLength();//총 문서 수는 나중에 weight계산시 계속 필요하니까 전역변수 선언
 			for(int i=0;i<N;i++) {
 				Node docchild=doclist.item(i);
 				String[] text=docchild.getChildNodes().item(3).getTextContent().split("#");
@@ -80,12 +85,12 @@ public class indexer {
 				}
 				
 			}
-		
+			System.out.println(hashmap.get("라면"));
 			objectoutputstream.writeObject(hashmap);
 			objectoutputstream.close();
 			//hashmap index.post에 저장
 			
-
+			/*
 			//index.post 읽어오기
 			FileInputStream fileinputstream=new FileInputStream("src/data/index.post");
 			ObjectInputStream objectinputstream=new ObjectInputStream(fileinputstream);
@@ -103,7 +108,7 @@ public class indexer {
 				ArrayList<Float> values=(ArrayList)hashmap2.get(key);
 				System.out.println(key+"="+values);
 			}
-			
+			*/
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -116,6 +121,48 @@ public class indexer {
 		float weight=Math.round(tf*Math.log((double)N/df)*100);
 		weight=weight/100;
 		return weight;
+	}
+	
+	float[] similarity; //유사도 담을 배열 미리 선언
+	public void getQeury(String qr) {
+		similarity=new float[N];
+		initArray(similarity);
+		KeywordExtractor ke=new KeywordExtractor();
+		KeywordList kl=ke.extractKeyword(qr, true);
+		
+		String keyword[]=new String[kl.size()]; //분석 단어 저장
+		
+		for(int i=0;i<kl.size();i++) {
+			Keyword kwrd=kl.get(i);
+			CalcSim(kwrd.getString(),kwrd.getCnt());
+			//keyword[i]=kwrd.getString()+" "+kwrd.getCnt();
+		}
+		
+		for(int i=0;i<3;i++){
+			System.out.println(similarity[i]);
+		}
+	}
+	
+	private void CalcSim(String keyword,int weight) { //inner product 후 유사도 반환
+		System.out.println(keyword+" "+Integer.toString(weight));
+		for(int i=0;i<N;i++) {
+			ArrayList<Float> al=hashmap.get(keyword);
+			if(al.contains((float)i)) {	
+				int index=al.indexOf((float)i);
+				System.out.println(i);
+				float wit=(float)al.get(index+1);
+				System.out.println(similarity[i]);
+				similarity[i]+=weight*wit;
+				System.out.println(similarity[i]);
+			}
+			//System.out.println(al.size());
+		}
+		
+	}
+	private void initArray(float[] sim) {
+		for(int i=0;i<sim.length;i++) {
+			sim[i]=0.0f;
+		}
 	}
 
 }
