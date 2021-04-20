@@ -5,7 +5,7 @@ public class midterm {
 	public static void main(String[] args) throws IOException  {
 		//args[0]== java args[1]== midterm이라고 생각하고 작성했씁니다
 		//실습코드랑 같이 올렸습니다...
-		//구현은 다 했는데 출력이 안됩니다
+		//키워드 개수 검사하는 것까지만 구현했씁니다.
 		if(args[2].equals("-f")){
 			String filename=args[3];
 			String query=args[5];
