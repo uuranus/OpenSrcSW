@@ -10,7 +10,7 @@ public class getSnippet {
 		BufferedReader br=new BufferedReader(new FileReader(file));
 		String line="";
 		int maxcount=0;
-		
+		System.out.println("!!");
 		while((line=br.readLine())!=null) {
 			String temp[]=line.split(" ");
 			int count=0;
